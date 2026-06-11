@@ -1,0 +1,36 @@
+import cv2
+
+cap = cv2.VideoCapture(0)
+k_size = 5 
+
+print("Instructions:\nPress 'w' to increase blur (Softer edges).\nPress 's' to decrease blur (Sharper edges).\nPress 'q' to exit.")
+
+while cap.isOpened():
+    success, frame = cap.read()
+    if not success:
+        break
+        
+   
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    
+    
+    blurred = cv2.GaussianBlur(gray, (k_size, k_size), 0)
+
+    edges = cv2.Canny(blurred, 50, 150)
+    
+  
+    cv2.putText(edges, f"Kernel Blur Size: {k_size}x{k_size}", (20, 40), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+    
+    cv2.imshow("Dynamic Live Canny Edges", edges)
+    
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord('w'):
+        k_size = min(31, k_size + 2) # upper boundary safeguard limit
+    elif key == ord('s'):
+        k_size = max(1, k_size - 2)  # lower boundary limit
+    elif key == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
